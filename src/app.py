@@ -44,6 +44,55 @@ def handle_hello():
     }
 
     return jsonify(response_body), 200
+@app.route('/users', methods=['GET'])
+def get_users():
+    users = User.query.all()
+    return jsonify([user.username for user in users])
+
+@app.route('/users/favorites', methods=['GET'])
+def get_user_favorites():
+    user_id = request.args.get('user_id')
+    favorites = Favorite.query.filter_by(user_id=user_id).all()
+    return jsonify([{'planet_id': favorite.planet_id, 'people_id': favorite.people_id} for favorite in favorites])
+
+@app.route('/favorite/planet/<int:planet_id>', methods=['POST'])
+def add_favorite_planet(planet_id):
+    user_id = request.args.get('user_id')
+    favorite = Favorite(planet_id=planet_id, user_id=user_id)
+    db.session.add(favorite)
+    db.session.commit()
+    return "Favorite planet added successfully", 201
+
+@app.route('/favorite/people/<int:people_id>', methods=['POST'])
+def add_favorite_people(people_id):
+    user_id = request.args.get('user_id')
+    favorite = Favorite(people_id=people_id, user_id=user_id)
+    db.session.add(favorite)
+    db.session.commit()
+    return "Favorite people added successfully", 201
+
+@app.route('/favorite/planet/<int:planet_id>', methods=['DELETE'])
+def delete_favorite_planet(planet_id):
+    user_id = request.args.get('user_id')
+    favorite = Favorite.query.filter_by(planet_id=planet_id, user_id=user_id).first()
+    if favorite:
+        db.session.delete(favorite)
+        db.session.commit()
+        return "Favorite planet deleted successfully", 200
+    return "Favorite planet not found", 404
+
+@app.route('/favorite/people/<int:people_id>', methods=['DELETE'])
+def delete_favorite_people(people_id):
+    user_id = request.args.get('user_id')
+    favorite = Favorite.query.filter_by(people_id=people_id, user_id=user_id).first()
+    if favorite:
+        db.session.delete(favorite)
+        db.session.commit()
+        return "Favorite people deleted successfully", 200
+    return "Favorite people not found", 404
+
+if __name__ == '__main__':
+    app.run(debug=True)
 
 # this only runs if `$ python src/app.py` is executed
 if __name__ == '__main__':
