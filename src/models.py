@@ -9,7 +9,7 @@ class User(db.Model):
     is_active = db.Column(db.Boolean(), unique=False, nullable=False)
 
     def __repr__(self):
-        return '<User %r>' % self.username
+        return '<User %r>' % self.email
 
     def serialize(self):
         return {
@@ -17,15 +17,70 @@ class User(db.Model):
             "email": self.email,
             # do not serialize the password, its a security breach
         }
-    from app import db
 
-class User(db.Model):
+class People(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(100), unique=True, nullable=False)
-    favorites = db.relationship('Favorite', backref='user', lazy=True)
+    name = db.Column(db.String(120), nullable=False)
+    gender = db.Column(db.String(120), nullable=False)
 
-class Favorite(db.Model):
+    def __repr__(self):
+        return '<People %r>' % self.name
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "gender": self.gender,
+            # do not serialize the password, its a security breach
+        }
+    
+class Planets(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    planet_id = db.Column(db.Integer)
-    people_id = db.Column(db.Integer)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    name = db.Column(db.String(120), nullable=False)
+    climate = db.Column(db.String(120), nullable=False)
+    
+
+    def __repr__(self):
+        return '<Planets %r>' % self.name
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "climate": self.climate,
+            # do not serialize the password, its a security breach
+        }
+
+class Favorite_planets(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, nullable=False)
+    planet_id = db.Column(db.Integer, nullable=False)
+
+
+    def __repr__(self):
+        return '<Favorite_planets %r>' % self.user_id
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "planet_id": self.planet_id,
+            # do not serialize the password, its a security breach
+        }
+
+class Favorite_people(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, nullable=False)
+    people_id = db.Column(db.Integer, nullable=False)
+
+
+    def __repr__(self):
+        return '<Favorite_people %r>' % self.user_id
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "people_id": self.people_id,
+            # do not serialize the password, its a security breach
+        }
